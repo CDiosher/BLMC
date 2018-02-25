@@ -19,6 +19,7 @@ class M_clist extends CI_Model {
 	}
 
 	public function getAllCustomer() {
+		$this->db->order_by('date_created DESC');
 		$res = $this->db->get('clist');
 		return $res->result();
 	}
