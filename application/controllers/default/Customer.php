@@ -8,6 +8,7 @@ class Customer extends MY_Controller {
 		$this->load->model('admin/M_retail','retail');
 		$this->load->model('admin/M_purchase_order','purchase_order');
 		$this->load->model('admin/M_inventory','inventory');
+		$this->load->model('default/M_clist','clist');
 		if(!$this->session->userdata('logged_in')) redirect(base_url());
 	}
 
@@ -15,7 +16,6 @@ class Customer extends MY_Controller {
 
 		$data['sitename'] = 'Cashier Dashboard';
 		$data['content'] = 'admin/pages/customer/customer';
-		$this->load->model('admin/M_retail','retail');
 		$this->parser->parse('admin/template/template',$data);
 	}
 
@@ -50,17 +50,47 @@ class Customer extends MY_Controller {
 				);
 				array_push($push,$batch);
 			}
+			/*foreach ($push as $key) {
+					$name = $key['c_name'];
+					$product = $key['products'];
+					$category = $key['category'];
+					$quan = $key['quantity'];
+
+					echo $name;
+
+					//$this->updateInvetory($product,$category,$quan);
+					//$this->verifyCname($name);
+				}
+				die();*/
 			if($this->customer->insert_transaction($push)) {
+				
 				foreach ($push as $key) {
+					$name = $key['c_name'];
 					$product = $key['products'];
 					$category = $key['category'];
 					$quan = $key['quantity'];
 
 					$this->updateInvetory($product,$category,$quan);
+					$this->verifyCname($name);
 				}
 				$this->session->set_flashdata('success', '<div <div class="alert alert-success alert-dismissable text-center" style="width:50%;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong id="notFound">Transaction Complete!</strong></div>');
 				redirect('customer');
 			}
+		}
+	}
+
+	public function verifyCname($name) {
+		$_verify = $this->clist->verifyName($name);
+		
+		if($_verify > 0) {
+			//do nothing
+		} else {
+			$data = array(
+				'full_name' => $name,
+				'processed_by' => $this->session->userdata('username'),
+				'date_created' => date('Y-m-d H:i:s')
+			);
+			$this->clist->insertNewCustomer($data);
 		}
 	}
 

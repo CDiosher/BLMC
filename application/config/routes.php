@@ -64,3 +64,4 @@ $route['prize'] = 'default/Customer/getRetailPrize';
 $route['customer/transaction'] = 'default/Customer/transaction';
 $route['stocks/retail'] = 'default/Customer/retail';
 $route['stocks/wholesale'] = 'default/Customer/wholesale';
+$route['customer/list'] = 'default/CustomerList';
